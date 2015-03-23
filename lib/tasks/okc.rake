@@ -10,7 +10,7 @@ require 'pry'
 
 require 'scraper'
 require 'vote_scraper'
-require 'councillor_scraper'
+require 'councillors_scraper'
 require 'agenda_scraper'
 require 'parsed_item'
 require 'minutes_scraper'
@@ -48,7 +48,6 @@ namespace :okc do
     
     items.each do |item|
       item_number = item.xpath("//table[@class='border']/tr/td/font[@size='5']").text
-
       unless item_number.empty?
         parsed_agenda_item = ParsedItem.new(item_number, item).to_h
         Item.create(parsed_agenda_item)
@@ -99,9 +98,7 @@ namespace :okc do
   ##################################################################
   
   desc "Scrape Minutes"
-  task :minutes do |t|
-
-    
+  task :minutes do |t|    
     MinutesScraper.new.run
   end
 
