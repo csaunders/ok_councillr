@@ -43,8 +43,8 @@ puts "Creating Users".blue
 		email: Faker::Internet.safe_email,
 		first_name: Faker::Name.first_name,
 		last_name: Faker::Name.last_name,
-		address: Faker::Address.street_address,
-		postal_code: user_pc.sample,
+		street_name: Faker::Address.street_address,
+		street_num: Faker::Address.building_number,
 		password: "password",
 		password_confirmation: "password"
 	)
@@ -140,6 +140,19 @@ Item.all.each do |item|
 			)
 		end
 	end
+	
+	ward_number = item[:sections][:ward][0]
+
+	unless ward_number == nil
+	  item.wards << if(ward_number == "All") 
+	  	Ward.all 
+	  else
+	  	Ward.find(ward_number.to_i)
+	  end
+
+	  item.save
+	 end
+
 	print "❤️"; print " "
 end
 
