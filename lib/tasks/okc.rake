@@ -1,3 +1,21 @@
+require 'active_record'
+require 'active_support/all'
+require 'awesome_print'
+require 'colored'
+require 'csv'
+require 'http'
+require 'nokogiri'
+require 'open-uri'
+require 'pry'
+
+require 'scraper'
+require 'vote_scraper'
+require 'councillor_scraper'
+require 'agenda_scraper'
+require 'parsed_item'
+require 'minutes_scraper'
+
+
 namespace :okc do
   
   ##################################################################
@@ -24,8 +42,6 @@ namespace :okc do
   
   desc "Tests ParsedItem on a single file"
   task test_parser: [:destroy_items] do |t| 
-    require 'parsed_item'
-
     content  = open("lib/dirty_agendas/7849.html").read
     sections = content.split("<br clear=\"all\">")
     items    = sections.map { |item| Nokogiri::HTML(item) }
@@ -49,17 +65,6 @@ namespace :okc do
 
   desc "Scrapes, parses & persists raw vote records"
   task :votes do
-    require "http"
-    require "awesome_print"
-    require "colored"
-    require "csv"
-    require "pry"
-    require "nokogiri"
-    require "open-uri"
-    require "active_support/all"
-    require "active_record"
-    require 'scraper'
-    require 'vote_scraper'
     VoteScraper.new(4, "2014-02-16", "2014-02-22").run
   end
 
@@ -71,14 +76,6 @@ namespace :okc do
   
   desc "Scrape, parse & persist City Council agendas"
   task :agendas do |t|
-    require 'awesome_print'
-    require 'colored'
-    require 'http'
-    require 'nokogiri'
-    require 'open-uri'
-    require 'scraper'
-    require 'agenda_scraper'
-    
     puts "Creating Item Types".blue
     item_types = ItemType.create!([
       { name: 'Action' }, 
@@ -103,15 +100,20 @@ namespace :okc do
   
   desc "Scrape Minutes"
   task :minutes do |t|
-    require 'awesome_print'
-    require 'colored'
-    require 'http'
-    require 'nokogiri'
-    require 'open-uri'
-    require 'scraper'
-    require 'minutes_scraper'
+
     
     MinutesScraper.new.run
+  end
+
+  ##################################################################
+  #                                                                #
+  # COUNCILLORS SCRAPER                                            #
+  #                                                                #
+  ##################################################################
+  
+  desc "Gets City Councillor's Info"
+  task :minutes do |t|    
+    CouncillorsScraper.new.run
   end
 
 end
