@@ -3,7 +3,7 @@ class VoteScraper
 
   def initialize(term_id, from_date, to_date)
     @term_id      = term_id
-    @raw_file_dir = "#{raw_file_dir("votes")}/"
+    @raw_file_dir = "#{raw_file_dir(:votes)}/"
     @url          = "getAdminReport.do"
     @from_date    = from_date
     @to_date      = to_date
@@ -12,7 +12,11 @@ class VoteScraper
   end
 
   def run
+    puts "Destroying RawVoteRecord".red
+    RawVoteRecord.destroy_all
+
     puts "Getting member vote reports"
+    
     @members[1..-1].each do |member|
       unless File.exist? "#{file_name(member[:name])}.csv"
         get_vote_record(member)
@@ -33,6 +37,10 @@ class VoteScraper
   def parse_vote_record(member)
     vote_record_hashes(member)
       .each do |x|
+        councillor_name = member[:name].split(" ")
+        councillor = Councillor.find_by first_name: councillor_name[0], last_name: councillor_name.from(1).join(" ")
+        x[:councillor] = councillor
+
         begin
           RawVoteRecord.create!(x)
         rescue Encoding::UndefinedConversionError
@@ -47,17 +55,15 @@ class VoteScraper
     open_vote_record(member).map do |x|
       x.to_h
        .symbolize_keys
-       .merge(councillor_id: member[:id], 
-          councillor_name: member[:name])
     end
   end
 
   def open_vote_record(member)
     csv = File.open(file_name(member[:name]), 'r')
-    CSV.parse(csv, headers: true, header_converters: camel_case_headers)
+    CSV.parse(csv, headers: true, header_converters: sake_case_headers)
   end
 
-  def camel_case_headers
+  def sake_case_headers
     lambda { |h| h.try(:parameterize).try(:underscore) }
   end
 

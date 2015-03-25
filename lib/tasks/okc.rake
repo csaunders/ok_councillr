@@ -25,7 +25,7 @@ namespace :okc do
   ##################################################################
 
   desc "Gimme a fresh start. Drops the db and parses the data again."
-  task fresh: ['db:drop', 'db:create', 'db:migrate', :agendas, 'db:seed'] do
+  task fresh: ['db:drop', 'db:create', 'db:migrate', :agendas, 'db:seed', :votes] do
     puts "You look great today.".magenta_on_white
   end
 
@@ -42,6 +42,8 @@ namespace :okc do
   
   desc "Tests ParsedItem on a single file"
   task test_parser: [:destroy_items] do |t| 
+    require 'parsed_item'
+
     content  = open("lib/dirty_agendas/7849.html").read
     sections = content.split("<br clear=\"all\">")
     items    = sections.map { |item| Nokogiri::HTML(item) }
