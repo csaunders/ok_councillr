@@ -112,7 +112,7 @@ namespace :okc do
   ##################################################################
   
   desc "Gets City Councillor's Info"
-  task :minutes do |t|    
+  task :councillors do |t|    
     CouncillorsScraper.new.run
   end
 
