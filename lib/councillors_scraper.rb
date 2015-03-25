@@ -3,7 +3,7 @@ class CouncillorsScraper
 	def initialize
 		@base_uri             = "http://www1.toronto.ca"
 		@councillor_list_path = "/wps/portal/contentonly?vgnextoid=c3a83293dc3ef310VgnVCM10000071d60f89RCRD"
-		@councillors = []
+		@councillors          = []
 	end
 
 	def get(uri)
@@ -34,16 +34,23 @@ class CouncillorsScraper
 			hash = {}
 			uri = URI(@base_uri + path)
 			doc = Loofah.document( get(uri) ).scrub!(:strip)
-			@councillors << { name:  get_name(doc),
+			@councillors << { name:  get_name,
 				image: @base_uri + get_img_src(doc),
 				website: get_website(doc)
 			}
 		end
 	end
 
-	def get_name(doc)
-		doc.css("h1").text.strip
+	def get_name
+		names = []
+		councillors_paths.each do |path|
+			names << path.previous.previous.previous.text
+		end
+		binding.pry
 	end
+# def get_name(doc)
+# 		doc.css("h1").text.strip.split(" ")
+# 	end
 
 	def get_img_src(doc)
 		doc.css("table").css("img").attr("src").to_s
@@ -53,7 +60,6 @@ class CouncillorsScraper
 		href = doc.xpath('//table/tbody/tr[1]/td[1]').css("a").first.attr("href")
 		href unless href =~ /([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)/ #regex for an email address
 	end
-
 
 	def run
 		councillor_info
