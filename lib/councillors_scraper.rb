@@ -26,17 +26,16 @@ class CouncillorsScraper
 	def councillor_info
 		puts "Getting Councillor Info"
 		councillors_paths.each_with_index do |path, i|
-			if i % 15 == 0
-				print "Sleeping... 💆\n"
+			if i > 0 && i % 15 == 0
+				print " Sleeping... 💆 Zzzz "
 				sleep(2)
 			end
 			print " 🚀 "
 			hash = {}
 			uri = URI(@base_uri + path)
-			puts uri
 			doc = Loofah.document( get(uri) ).scrub!(:strip)
 			@councillors << { name:  get_name(doc),
-				image: get_img_src(doc),
+				image: @base_uri + get_img_src(doc),
 				website: get_website(doc)
 			}
 		end
@@ -47,7 +46,7 @@ class CouncillorsScraper
 	end
 
 	def get_img_src(doc)
-		doc.css("table").css("img").attr("src")
+		doc.css("table").css("img").attr("src").to_s
 	end
 	
 	def get_website(doc)
@@ -58,7 +57,7 @@ class CouncillorsScraper
 
 	def run
 		councillor_info
-		puts @councillors
+		print @councillors
 	end
 end
 
