@@ -23,6 +23,7 @@ class ItemsController < ApplicationController
 			@past_vote = @item.user_votes.where(user_id: current_user.id, item_id: @item.id)
 			@past_vote = @past_vote.first.vote unless @past_vote.count == 0 
 		end
+
 	end
 	
 	def edit
@@ -33,12 +34,15 @@ class ItemsController < ApplicationController
 	def update
 		@item = Item.find params[:id]
 
+		respond_to do |format|
 			if @item.update_attributes item_params
-					redirect_to item_path(@item)
+				format.html { redirect_to item_path(@item) }
+		  	format.js
 			else
 				render :show
 			end
-	
+		end
+
 	end
 
 	private 

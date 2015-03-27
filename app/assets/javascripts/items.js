@@ -37,3 +37,14 @@ $('.synopsis .edit').click(function(e){
 	e.preventDefault();
 	$('#edit-form').slideToggle(500);
 })
+
+ $('#edit-form').submit(function(event) {
+	event.preventDefault();
+	var synopsis = $('#edit-form').val();
+	$.ajax({
+		url: 'update',
+		type: 'POST',
+		data: synopsis,
+		dataType: 'script'
+	});
+});
