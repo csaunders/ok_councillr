@@ -40,7 +40,7 @@ $('.synopsis .edit').click(function(e){
 
  $('#edit-form').submit(function(event) {
 	event.preventDefault();
-	var synopsis = $('#edit-form').val();
+	var synopsis = $('#item_synopsis').val();
 	$.ajax({
 		url: 'update',
 		type: 'POST',
